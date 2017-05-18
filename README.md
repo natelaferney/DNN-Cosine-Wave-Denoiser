@@ -23,6 +23,7 @@ Dependencies
 =============
 
 TensorFlow v1.0
+
 Numpy v1.11
 
 Credits
