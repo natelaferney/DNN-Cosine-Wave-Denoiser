@@ -17,7 +17,7 @@ cosine wave of interest.
 To run the neural network, run the `dnn_denoiser.py` file.
 
 The model reports back about 99% accuracy when sampled
-56 and 112 samples per unit of time with five different phases.
+56 and 112 samples per unit of time with four different phases.
 
 Dependencies
 =============
