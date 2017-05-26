@@ -5,7 +5,7 @@ from generate_data import generate_training_data
 tf.set_random_seed(0)
 
 input_samples = 112
-num_labels = 8
+num_labels = 4
 base_freq = 12
 
 #How many samples will be used per training session
@@ -23,10 +23,11 @@ lr = tf.placeholder(tf.float32)
 # Probability of keeping a node during dropout 
 pkeep = tf.placeholder(tf.float32)
 
-L = 56
-M = 40
-N = 32
-O = 16
+L = 2*input_samples
+M = input_samples
+N = int(input_samples/2)
+O = int(input_samples/4)
+
 # Weights initialised with small random values between -0.2 and +0.2
 # When using RELUs, make sure biases are initialised with small *positive* values for example 0.1 = tf.ones([K])/10
 W1 = tf.Variable(tf.truncated_normal([input_samples, L], stddev=0.1))  
