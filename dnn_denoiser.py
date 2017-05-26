@@ -5,7 +5,7 @@ from generate_data import generate_training_data
 tf.set_random_seed(0)
 
 input_samples = 112
-num_labels = 4
+num_labels = 8
 base_freq = 12
 
 #How many samples will be used per training session
@@ -23,10 +23,10 @@ lr = tf.placeholder(tf.float32)
 # Probability of keeping a node during dropout 
 pkeep = tf.placeholder(tf.float32)
 
-L = 28
-M = 20
-N = 15
-O = 10
+L = 56
+M = 40
+N = 32
+O = 16
 # Weights initialised with small random values between -0.2 and +0.2
 # When using RELUs, make sure biases are initialised with small *positive* values for example 0.1 = tf.ones([K])/10
 W1 = tf.Variable(tf.truncated_normal([input_samples, L], stddev=0.1))  
@@ -73,7 +73,7 @@ sess = tf.Session()
 sess.run(init)
 
 def training_step(i, base_freq, input_samples, batch_size):
-    batch_X, batch_Y = generate_training_data(base_freq, batch_size, input_samples)
+    batch_X, batch_Y = generate_training_data(base_freq, batch_size, input_samples, num_labels)
     max_learning_rate = 0.003
     min_learning_rate = 0.0001
     decay_speed = 2000.0 
@@ -83,7 +83,7 @@ def training_step(i, base_freq, input_samples, batch_size):
 
 def validation_step(i, base_freq, input_samples, batch_size):
     # learning rate decay
-    batch_X, batch_Y = generate_training_data(base_freq, batch_size, input_samples)
+    batch_X, batch_Y = generate_training_data(base_freq, batch_size, input_samples, num_labels)
     max_learning_rate = 0.005
     min_learning_rate = 0.0001
     decay_speed = 1000
