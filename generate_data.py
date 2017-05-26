@@ -1,39 +1,32 @@
 import numpy as np
-import tensorflow as tf
 
-def generate_training_data(base_freq, iterations, samplesize) :
+def generate_harmonic_noise(max_harmonics, samplesize):
     time = np.linspace(0,1,num=samplesize)
-    g1 = np.cos(2*base_freq*np.pi*time)
-    g2 = np.cos(2*base_freq*np.pi*time + np.pi/2)
-    g3 = np.cos(2*base_freq*np.pi*time + np.pi)
-    g4 = np.cos(2*base_freq*np.pi*time + 3*np.pi/2)
-    
-    #The upper bound on the number of harmonics is hardcoded for now.
-    num_of_harmonics = np.random.randint(low=0, high=12 )
+    num_of_harmonics = np.random.randint(low=0, high=max_harmonics )
     harmonics = np.random.randint(low=0, high=round(samplesize/2)+2, size=num_of_harmonics)
     harmonic_noise = np.zeros(samplesize)
     for j in harmonics:
         harmonic_noise = harmonic_noise + np.cos(2*j*np.pi*time)
-    x1 = g1 + harmonic_noise + np.random.randn(samplesize)
-    x2 = g2 + harmonic_noise + np.random.randn(samplesize)
-    x3 = g3 + harmonic_noise + np.random.randn(samplesize)
-    x4 = g4 + harmonic_noise + np.random.randn(samplesize)
+    return harmonic_noise
 
-    X = np.column_stack((x1,x2,x3,x4))
-    Y = np.eye(4)
+def generate_training_data(base_freq, iterations, samplesize, num_phases) :
 
-    for i in range(1,iterations):
-        num_of_harmonics = np.random.randint(low=0, high=12 )
-        harmonics = np.random.randint(low=0, high=round(samplesize/2)+2, size=num_of_harmonics)
-        harmonic_noise = np.zeros(samplesize)
-        for j in harmonics:
-            harmonic_noise = harmonic_noise + np.cos(2*j*np.pi*time)
-        x1 = g1 + harmonic_noise + np.random.randn(samplesize)
-        x2 = g2 + harmonic_noise + np.random.randn(samplesize)
-        x3 = g3 + harmonic_noise + np.random.randn(samplesize)
-        x4 = g4 + harmonic_noise + np.random.randn(samplesize)
-        x = np.column_stack((x1,x2,x3,x4))
-        X = np.column_stack((X,x))
-        Y = np.column_stack((Y,np.eye(4)))
-    
-    return X.transpose(), Y.transpose()
+    time = np.linspace(0,1,num=samplesize)
+    X = np.zeros((iterations*num_phases, samplesize))
+    Y = np.zeros((iterations*num_phases, num_phases))
+    x = np.zeros((num_phases, samplesize))
+    y = np.eye(num_phases)
+    #The upper bound on the number of harmonics is hardcoded for now.
+    max_harmonics = 12
+
+    #These are the signals we are interested in classifying
+    #Creating them ahead of time for convenience.
+    for i in range(0, num_phases):
+        x[i,:] = np.cos(2*base_freq*np.pi*time + i*np.pi/num_phases)                  
+
+    for i in range(0,iterations):
+        for j in range(0, num_phases):
+            X[num_phases*i+j,:] = x[j,:] + generate_harmonic_noise(max_harmonics, samplesize) + np.random.randn(samplesize)
+        Y[num_phases*i:num_phases*(i+1),:] = y
+
+    return X, Y
